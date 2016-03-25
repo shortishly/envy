@@ -1,0 +1,9 @@
+image: reg001.local:5000/shortishly/erlang-docker
+
+types:
+    - build
+
+build:
+    type: build
+    script:
+        - make
