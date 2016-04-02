@@ -55,9 +55,12 @@ get_env(Application, Key, Strategy) ->
            string:to_upper(any:to_list(Key))) of
 
         true ->
+            %% key is already prefixed with the application name
             gproc:get_env(l, Application, Key, Strategy);
 
         false ->
+            %% ensure that if the os_env strategy is being used that
+            %% the key is prefixed with the application name.
             gproc:get_env(l, Application, Key, lists:map(
                                                  os_env(Application, Key),
                                                  Strategy))
@@ -67,6 +70,8 @@ get_env(Application, Key, Strategy) ->
 os_env(Application, Key) ->
     fun
         (os_env) ->
+            %% replace vanilla os_env strategy with
+            %% {os_env, Application_Key}
             {os_env, prefix_with_application(Application, Key)};
 
         (Otherwise) ->
