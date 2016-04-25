@@ -24,8 +24,21 @@ DEPS = \
 dep_any = git https://github.com/shortishly/any.git master
 
 SHELL_OPTS = \
+	-boot start_sasl \
+	-config dev.config \
+	-name $(PROJECT) \
 	-s $(PROJECT) \
-	-sname $(PROJECT)
+	-s rb \
+	-s sync \
+	-setcookie $(PROJECT)
 
+SHELL_DEPS = \
+	sync
+
+PLT_APPS = \
+	compiler \
+	crypto \
+	hipe \
+	syntax_tools
 
 include erlang.mk

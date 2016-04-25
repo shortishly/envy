@@ -16,7 +16,6 @@
 -module(envy).
 
 -export([get_env/3]).
--export([make/0]).
 -export([start/0]).
 -export([to_atom/3]).
 -export([to_binary/3]).
@@ -84,9 +83,6 @@ prefix_with_application(Application, Key) ->
 
 to_upper(X) ->
     string:to_upper(any:to_list(X)).
-
-make() ->
-    make:all([load]).
 
 
 start() ->
