@@ -20,6 +20,7 @@
 -export([to_atom/3]).
 -export([to_binary/3]).
 -export([to_boolean/3]).
+-export([to_integer_or_atom/3]).
 -export([to_float/3]).
 -export([to_integer/3]).
 -export([to_list/3]).
@@ -27,6 +28,14 @@
 
 to_integer(Application, Key, Strategy) ->
     any:to_integer(get_env(Application, Key, Strategy)).
+
+to_integer_or_atom(Application, Key, Strategy) ->
+    try
+        any:to_integer(get_env(Application, Key, Strategy))
+    catch
+        error:function_clause ->
+            any:to_atom(get_env(Application, Key, Strategy))
+    end.
 
 to_float(Application, Key, Strategy) ->
     any:to_float(get_env(Application, Key, Strategy)).
