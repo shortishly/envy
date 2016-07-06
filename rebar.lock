@@ -1,0 +1,4 @@
+[{<<"any">>,
+  {git,"git@github.com:flitbit/any.git",
+       {ref,"cccac44bfddf6eb132d48f2d29cc00413ecd418b"}},
+  0}].
