@@ -15,7 +15,6 @@
 #
 PROJECT = envy
 PROJECT_DESCRIPTION = gproc wrapper prefixing os_env with application name
-PROJECT_VERSION = 0.0.1
 
 DEPS = \
 	any \
