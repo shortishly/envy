@@ -16,13 +16,14 @@
 -module(envy).
 
 -export([get_env/3]).
+-export([set_env/4]).
 -export([start/0]).
 -export([to_atom/3]).
 -export([to_binary/3]).
 -export([to_boolean/3]).
--export([to_integer_or_atom/3]).
 -export([to_float/3]).
 -export([to_integer/3]).
+-export([to_integer_or_atom/3]).
 -export([to_list/3]).
 
 
@@ -72,6 +73,31 @@ get_env(Application, Key, Strategy) ->
             gproc:get_env(l, Application, Key, lists:map(
                                                  os_env(Application, Key),
                                                  Strategy))
+    end.
+
+%% a wafer thin wrapper on gproc's set_env that ensures any os_env is
+%% prefixed by the application name to prevent nasty environment
+%% clashes.
+
+set_env(Application, Key, Value, Strategy) ->
+    case lists:prefix(
+           any:to_list(Application),
+           string:to_upper(any:to_list(Key))) of
+
+        true ->
+            %% key is already prefixed with the application name
+            gproc:set_env(l, Application, Key, Value, Strategy);
+
+        false ->
+            %% ensure that if the os_env strategy is being used that
+            %% the key is prefixed with the application name.
+            gproc:set_env(l,
+                          Application,
+                          Key,
+                          Value,
+                          lists:map(
+                            os_env(Application, Key),
+                            Strategy))
     end.
 
 
