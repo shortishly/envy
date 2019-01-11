@@ -22,7 +22,7 @@ DEPS = \
 
 dep_any = git https://github.com/shortishly/any.git
 
-dep_any_commit = 0.1.0
+dep_any_commit = 0.2.0
 
 
 SHELL_OPTS = \
