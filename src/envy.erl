@@ -17,7 +17,6 @@
 
 
 -export([get_env/3]).
--export([set_env/4]).
 -export([start/0]).
 -export([to_atom/3]).
 -export([to_binary/3]).
@@ -64,66 +63,50 @@ to_list(Application, Key, Strategy) ->
 %% prefixed by the application name to prevent nasty environment
 %% clashes.
 
-get_env(Application, Key, Strategy) ->
-    case lists:prefix(
-           any:to_list(Application),
-           string:to_upper(any:to_list(Key))) of
+get_env(Application, Key, FullStrategy) ->
+    ?FUNCTION_NAME(Application, Key, FullStrategy, undefined).
 
-        true ->
-            %% key is already prefixed with the application name
-            gproc:get_env(l, Application, Key, Strategy);
+get_env(Application, Key, [os_env | T], Default) ->
+    case os:getenv(
+           string:uppercase(
+             lists:concat(
+               lists:join(
+                 "_",
+                 case lists:prefix(
+                        any:to_list(Application),
+                        string:to_upper(any:to_list(Key))) of
 
-        false ->
-            %% ensure that if the os_env strategy is being used that
-            %% the key is prefixed with the application name.
-            gproc:get_env(l, Application, Key, lists:map(
-                                                 os_env(Application, Key),
-                                                 Strategy))
-    end.
+                     true ->
+                         [Key];
 
-%% a wafer thin wrapper on gproc's set_env that ensures any os_env is
-%% prefixed by the application name to prevent nasty environment
-%% clashes.
-
-set_env(Application, Key, Value, Strategy) ->
-    case lists:prefix(
-           any:to_list(Application),
-           string:to_upper(any:to_list(Key))) of
-
-        true ->
-            %% key is already prefixed with the application name
-            gproc:set_env(l, Application, Key, Value, Strategy);
+                     false ->
+                         [Application, Key]
+                 end)))) of
 
         false ->
-            %% ensure that if the os_env strategy is being used that
-            %% the key is prefixed with the application name.
-            gproc:set_env(l,
-                          Application,
-                          Key,
-                          Value,
-                          lists:map(
-                            os_env(Application, Key),
-                            Strategy))
-    end.
+            ?FUNCTION_NAME(Application, Key, T, Default);
 
+        Value ->
+            Value
+    end;
 
-os_env(Application, Key) ->
-    fun
-        (os_env) ->
-            %% replace vanilla os_env strategy with
-            %% {os_env, Application_Key}
-            {os_env, prefix_with_application(Application, Key)};
+get_env(Application, Key, [app_env | T], Default) ->
+    case application:get_env(Application, Key) of
+        undefined ->
+            ?FUNCTION_NAME(Application, Key, T, Default);
 
-        (Otherwise) ->
-            Otherwise
-    end.
+        {ok, Value} ->
+            Value
+    end;
 
+get_env(Application, Key, [{default, Default} | T], _) ->
+    ?FUNCTION_NAME(Application, Key, T, Default);
 
-prefix_with_application(Application, Key) ->
-    to_upper(Application) ++ "_" ++ to_upper(Key).
+get_env(_Application, _Key, [], Default) when is_function(Default) ->
+    Default();
 
-to_upper(X) ->
-    string:to_upper(any:to_list(X)).
+get_env(_Application, _Key, [], Default) ->
+    Default.
 
 
 start() ->

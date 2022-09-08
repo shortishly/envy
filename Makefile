@@ -14,13 +14,9 @@
 # limitations under the License.
 #
 PROJECT = envy
-PROJECT_DESCRIPTION = gproc wrapper prefixing os_env with application name
+PROJECT_DESCRIPTION = wrapper prefixing os_env with application name
 
-COVER = 1
-
-DEPS = \
-	any \
-	gproc
+DEPS += any
 
 dep_any = git https://github.com/shortishly/any.git
 

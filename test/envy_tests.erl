@@ -84,12 +84,25 @@ default_test_() ->
          (_) ->
              application:stop(envy)
      end,
-     ?_assertEqual(
-        Default,
-        envy:to_integer(
-          Application,
-          Key,
-          [os_env, app_env, {default, Default}]))}.
+     [?_assertEqual(
+         Default,
+         envy:to_integer(
+           Application,
+           Key,
+           [os_env, app_env, {default, Default}])),
+
+      ?_assertEqual(
+         Default,
+         envy:to_integer(
+           Application,
+           Key,
+           [os_env,
+            app_env,
+            {default,
+             fun
+                 () ->
+                     Default
+             end}]))]}.
 
 
 default_only_test_() ->
