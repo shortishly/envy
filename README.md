@@ -1,6 +1,6 @@
 # Envy #
 
-[![Build Status](https://travis-ci.org/shortishly/envy.svg)](https://travis-ci.org/shortishly/envy)
+![main](https://github.com/shortishly/envy/actions/workflows/main.yml/badge.svg)
 
 An OTP application typically gets its configuration using the
 operating system environment (`os:getenv/1`) and/or application
@@ -31,9 +31,8 @@ erl -kernel http_port 8080
 {ok,8080}
 ```
 
-Envy is a simple wrapper over
-[get_env](https://github.com/uwiger/gproc/blob/master/doc/gproc.md#get_env-4)
-which does a couple of things:
+Envy is a simple wrapper over both `os:getenv` and
+`application:get_env` which does a couple of things:
 
 1. Convert the different types naturally returned by `os:getenv` and
 `application:get_env` to the type that you are expecting.
