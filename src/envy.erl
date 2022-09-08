@@ -1,4 +1,4 @@
-%% Copyright (c) 2012-2016 Peter Morgan <peter.james.morgan@gmail.com>
+%% Copyright (c) 2012-2022 Peter Morgan <peter.james.morgan@gmail.com>
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 
 -module(envy).
 
+
 -export([get_env/3]).
 -export([set_env/4]).
 -export([start/0]).
@@ -30,6 +31,7 @@
 to_integer(Application, Key, Strategy) ->
     any:to_integer(get_env(Application, Key, Strategy)).
 
+
 to_integer_or_atom(Application, Key, Strategy) ->
     try
         any:to_integer(get_env(Application, Key, Strategy))
@@ -41,14 +43,18 @@ to_integer_or_atom(Application, Key, Strategy) ->
 to_float(Application, Key, Strategy) ->
     any:to_float(get_env(Application, Key, Strategy)).
 
+
 to_atom(Application, Key, Strategy) ->
     any:to_atom(get_env(Application, Key, Strategy)).
+
 
 to_boolean(Application, Key, Strategy) ->
     any:to_boolean(get_env(Application, Key, Strategy)).
 
+
 to_binary(Application, Key, Strategy) ->
     any:to_binary(get_env(Application, Key, Strategy)).
+
 
 to_list(Application, Key, Strategy) ->
     any:to_list(get_env(Application, Key, Strategy)).

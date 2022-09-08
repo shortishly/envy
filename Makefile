@@ -1,5 +1,5 @@
 #-*- mode: makefile-gmake -*-
-# Copyright (c) 2012-2016 Peter Morgan <peter.james.morgan@gmail.com>
+# Copyright (c) 2012-2022 Peter Morgan <peter.james.morgan@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 PROJECT = envy
 PROJECT_DESCRIPTION = gproc wrapper prefixing os_env with application name
 
+COVER = 1
+
 DEPS = \
 	any \
 	gproc
@@ -26,13 +28,9 @@ dep_any_commit = 0.2.0
 
 
 SHELL_OPTS = \
-	-boot start_sasl \
 	-config dev.config \
-	-name $(PROJECT) \
 	-s $(PROJECT) \
-	-s rb \
-	-s sync \
-	-setcookie $(PROJECT)
+	-s sync
 
 SHELL_DEPS = \
 	sync
@@ -40,10 +38,6 @@ SHELL_DEPS = \
 PLT_APPS = \
 	compiler \
 	crypto \
-	hipe \
 	syntax_tools
 
 include erlang.mk
-
-# Generate rebar.config on build.
-app:: rebar.config

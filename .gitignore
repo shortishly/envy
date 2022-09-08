@@ -16,3 +16,7 @@ xrefr
 elvis
 elvis.config
 \#*\#
+cover
+rebar.config
+test/*.beam
+test/ct.cover.spec
