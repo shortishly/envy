@@ -20,3 +20,4 @@ cover
 rebar.config
 test/*.beam
 test/ct.cover.spec
+recompile.log

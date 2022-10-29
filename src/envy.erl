@@ -16,6 +16,8 @@
 -module(envy).
 
 
+-export([envy/2]).
+-export([envy/3]).
 -export([get_env/3]).
 -export([start/0]).
 -export([to_atom/3]).
@@ -111,3 +113,38 @@ get_env(_Application, _Key, [], Default) ->
 
 start() ->
     application:ensure_all_started(?MODULE).
+
+
+envy(To, Names) ->
+    case envy:get_env(application(), snake_case(Names), [os_env, app_env]) of
+        undefined ->
+            error(badarg, [To, Names]);
+
+        Value ->
+            any:To(Value)
+    end.
+
+
+envy(To, Names, Default) ->
+    try
+        envy:To(application(), snake_case(Names), default(Default))
+
+    catch
+        error:badarg ->
+            Default
+    end.
+
+
+application() ->
+    {ok, Application} = application:get_application(),
+    Application.
+
+
+snake_case([_ | _] = Labels) ->
+    list_to_atom(lists:concat(lists:join("_", Labels))).
+
+
+default(Default) ->
+    %% Enable all configuration to be overriden by OS environment
+    %% variables, very useful for Docker.
+    [os_env, app_env, {default, Default}].

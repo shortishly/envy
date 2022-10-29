@@ -1,4 +1,4 @@
-# Envy #
+# Envy
 
 ![main](https://github.com/shortishly/envy/actions/workflows/main.yml/badge.svg)
 
