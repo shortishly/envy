@@ -146,7 +146,7 @@ start() ->
 -spec envy(#{default => envy_type(),
              to => to(),
              type => type_name(),
-             caller => ?MODULE,
+             caller => module(),
              names := [thing()]}) -> envy_type().
 
 
