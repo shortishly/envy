@@ -116,6 +116,40 @@ start() ->
     application:ensure_all_started(?MODULE).
 
 
+-type envy_type() :: atom()
+                   | binary()
+                   | boolean()
+                   | float()
+                   | integer()
+                   | list().
+
+-type to() :: to_atom
+            | to_binary
+            | to_boolean
+            | to_float
+            | to_integer
+            | to_integer_or_atom
+            | to_list.
+
+-type type_name() :: atom
+                   | binary
+                   | boolean
+                   | float
+                   | integer
+                   | integer_or_atom.
+
+-type thing() :: atom()
+               | float()
+               | integer()
+               | string().
+
+-spec envy(#{default => envy_type(),
+             to => to(),
+             type => type_name(),
+             caller => ?MODULE,
+             names := [thing()]}) -> envy_type().
+
+
 envy(#{caller := Caller,
        to := To,
        names := Names,
@@ -143,7 +177,54 @@ envy(#{to := To, names := Names, default := Default}) ->
     ?FUNCTION_NAME(To, Names, Default);
 
 envy(#{to := To, names := Names}) ->
-    ?FUNCTION_NAME(To, Names).
+    ?FUNCTION_NAME(To, Names);
+
+envy(#{default := infinity} = Arg)
+  when not(is_map_key(to, Arg)),
+       not(is_map_key(type, Arg)) ->
+    ?FUNCTION_NAME(Arg#{to => to_integer_or_atom});
+
+envy(#{default := Default} = Arg)
+  when is_boolean(Default),
+       not(is_map_key(to, Arg)),
+       not(is_map_key(type, Arg)) ->
+    ?FUNCTION_NAME(Arg#{to => to_boolean});
+
+envy(#{default := Default} = Arg)
+  when is_atom(Default),
+       not(is_map_key(to, Arg)),
+       not(is_map_key(type, Arg)) ->
+    ?FUNCTION_NAME(Arg#{to => to_atom});
+
+envy(#{default := Default} = Arg)
+  when is_binary(Default),
+       not(is_map_key(to, Arg)),
+       not(is_map_key(type, Arg)) ->
+    ?FUNCTION_NAME(Arg#{to => to_binary});
+
+envy(#{default := Default} = Arg)
+  when is_integer(Default),
+       not(is_map_key(to, Arg)),
+       not(is_map_key(type, Arg)) ->
+    ?FUNCTION_NAME(Arg#{to => to_integer});
+
+envy(#{default := Default} = Arg)
+  when is_float(Default),
+       not(is_map_key(to, Arg)),
+       not(is_map_key(type, Arg)) ->
+    ?FUNCTION_NAME(Arg#{to => to_float});
+
+envy(#{type := Type} = Arg) when Type == atom;
+                                 Type == binary;
+                                 Type == boolean;
+                                 Type == float;
+                                 Type == integer;
+                                 Type == integer_or_atom;
+                                 not(is_map_key(to, Arg)) ->
+    ?FUNCTION_NAME(
+       maps:merge(
+         #{to => snake_case([to, Type])},
+         maps:without([type], Arg))).
 
 
 envy(To, Names) ->
