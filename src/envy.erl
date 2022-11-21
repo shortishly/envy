@@ -136,7 +136,8 @@ start() ->
                    | boolean
                    | float
                    | integer
-                   | integer_or_atom.
+                   | integer_or_atom
+                   | list.
 
 -type thing() :: atom()
                | float()
@@ -209,6 +210,12 @@ envy(#{default := Default} = Arg)
     ?FUNCTION_NAME(Arg#{to => to_integer});
 
 envy(#{default := Default} = Arg)
+  when is_list(Default),
+       not(is_map_key(to, Arg)),
+       not(is_map_key(type, Arg)) ->
+    ?FUNCTION_NAME(Arg#{to => to_list});
+
+envy(#{default := Default} = Arg)
   when is_float(Default),
        not(is_map_key(to, Arg)),
        not(is_map_key(type, Arg)) ->
@@ -220,6 +227,7 @@ envy(#{type := Type} = Arg) when Type == atom;
                                  Type == float;
                                  Type == integer;
                                  Type == integer_or_atom;
+                                 Type == list;
                                  not(is_map_key(to, Arg)) ->
     ?FUNCTION_NAME(
        maps:merge(
