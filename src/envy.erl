@@ -16,6 +16,7 @@
 -module(envy).
 
 
+-export([envy/1]).
 -export([envy/2]).
 -export([envy/3]).
 -export([get_env/3]).
@@ -115,8 +116,38 @@ start() ->
     application:ensure_all_started(?MODULE).
 
 
+envy(#{caller := Caller,
+       to := To,
+       names := Names,
+       default := Default}) ->
+    try
+        envy:To(application(Caller), snake_case(Names), default(Default))
+
+    catch
+        error:badarg ->
+            Default
+    end;
+
+envy(#{caller := Caller,
+       to := To,
+       names := Names}) ->
+    case get_env(application(Caller), snake_case(Names), [os_env, app_env]) of
+        undefined ->
+            error(badarg, [To, Names]);
+
+        Value ->
+            any:To(Value)
+    end;
+
+envy(#{to := To, names := Names, default := Default}) ->
+    ?FUNCTION_NAME(To, Names, Default);
+
+envy(#{to := To, names := Names}) ->
+    ?FUNCTION_NAME(To, Names).
+
+
 envy(To, Names) ->
-    case envy:get_env(application(), snake_case(Names), [os_env, app_env]) of
+    case get_env(application(), snake_case(Names), [os_env, app_env]) of
         undefined ->
             error(badarg, [To, Names]);
 
@@ -132,6 +163,22 @@ envy(To, Names, Default) ->
     catch
         error:badarg ->
             Default
+    end.
+
+
+application(Caller) ->
+    case application:get_application() of
+        {ok, Application} ->
+            Application;
+
+        undefined ->
+            case string:split(atom_to_list(Caller), "_") of
+                [_] ->
+                    error(badarg, [Caller]);
+
+                [Prefix | _] ->
+                    list_to_atom(Prefix)
+            end
     end.
 
 
