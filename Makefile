@@ -20,7 +20,7 @@ DEPS += any
 
 dep_any = git https://github.com/shortishly/any.git
 
-dep_any_commit = 0.2.0
+dep_any_commit = 0.2.2
 
 
 SHELL_OPTS = \
@@ -37,3 +37,5 @@ PLT_APPS = \
 	syntax_tools
 
 include erlang.mk
+
+app:: rebar.config
