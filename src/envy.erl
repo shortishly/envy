@@ -256,18 +256,12 @@ envy(To, Names, Default) ->
 
 
 application(Caller) ->
-    case application:get_application() of
-        {ok, Application} ->
-            Application;
+    case string:split(atom_to_list(Caller), "_") of
+        [_] ->
+            error(badarg, [Caller]);
 
-        undefined ->
-            case string:split(atom_to_list(Caller), "_") of
-                [_] ->
-                    error(badarg, [Caller]);
-
-                [Prefix | _] ->
-                    list_to_atom(Prefix)
-            end
+        [Prefix | _] ->
+            list_to_atom(Prefix)
     end.
 
 
