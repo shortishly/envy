@@ -1,2 +1,3 @@
+ebin/envy.app -diff
 erlang.mk -diff
 rebar.config -diff
