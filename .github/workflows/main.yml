@@ -1,6 +1,11 @@
 ---
 on: [push]
-
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 jobs:
   build:
     strategy:
@@ -13,5 +18,16 @@ jobs:
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
-      - name: Build
-        run: make all dialyze tests
+      - run: make all dialyze tests
+  publish:
+    if: github.ref_name != 'main' && github.ref_name != 'develop'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: 26
+      - run: make hex-release-publish
+        env:
+          HEX_SECRET: ${{ secrets.HEX_SECRET }}

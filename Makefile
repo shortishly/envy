@@ -15,6 +15,7 @@
 #
 PROJECT = envy
 PROJECT_DESCRIPTION = wrapper prefixing os_env with application name
+PROJECT_VERSION = ${shell git describe --tags}
 
 DEPS += any
 
@@ -35,6 +36,15 @@ PLT_APPS = \
 	compiler \
 	crypto \
 	syntax_tools
+
+define HEX_TARBALL_EXTRA_METADATA
+#{
+	licenses => [<<"Apache-2">>],
+	links => #{
+		<<"GitHub">> => <<"https://github.com/shortishly/envy">>
+	}
+}
+endef
 
 include erlang.mk
 
