@@ -21,6 +21,7 @@
 -export([envy/3]).
 -export([get_env/3]).
 -export([start/0]).
+-export([suffix/1]).
 -export([to_atom/3]).
 -export([to_binary/3]).
 -export([to_boolean/3]).
@@ -255,13 +256,22 @@ envy(To, Names, Default) ->
     end.
 
 
-application(Caller) ->
-    case string:split(atom_to_list(Caller), "_") of
+application(M) ->
+    case string:split(atom_to_list(M), "_") of
         [_] ->
-            error(badarg, [Caller]);
+            error(badarg, [M]);
 
         [Prefix | _] ->
             list_to_atom(Prefix)
+    end.
+
+suffix(M) ->
+    case string:split(atom_to_list(M), "_") of
+        [_] ->
+            error(badarg, [M]);
+
+        [_ | Suffix] ->
+            snake_case(Suffix)
     end.
 
 

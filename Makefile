@@ -19,24 +19,27 @@ PROJECT_VERSION = ${shell git describe --tags}
 
 DEPS += any
 
-dep_any = git https://github.com/shortishly/any.git
+
+SHELL_OPTS += +pc unicode
+SHELL_OPTS += -config dev.config
+SHELL_OPTS += -s $(PROJECT)
+SHELL_OPTS += -s sync
+
+SHELL_DEPS += beaming
+SHELL_DEPS += recon
+SHELL_DEPS += sync
+
+PLT_APPS += compiler
+PLT_APPS += crypto
+PLT_APPS += syntax_tools
+
 
 dep_any_commit = 0.3.2
 
 
-SHELL_OPTS = \
-	-config dev.config \
-	-s $(PROJECT) \
-	-s sync
+dep_any = git https://github.com/shortishly/any.git
+dep_beaming = $(if $(DEP_LN),ln ../../beaming,git https://github.com/shortishly/beaming.git)
 
-SHELL_DEPS = \
-	sync
-
-PLT_APPS = \
-	compiler \
-	crypto \
-	syntax_tools
-
-include erlang.mk
+include $(if $(ERLANG_MK_FILENAME),$(ERLANG_MK_FILENAME),erlang.mk)
 
 app:: rebar.config

@@ -1,4 +1,4 @@
-%% Copyright (c) 2012-2022 Peter Morgan <peter.james.morgan@gmail.com>
+%% Copyright (c) 2012-2023 Peter Morgan <peter.james.morgan@gmail.com>
 %%
 %% Licensed under the Apache License, Version 2.0 (the "License");
 %% you may not use this file except in compliance with the License.
@@ -17,12 +17,17 @@
 
 
 -export([options/1]).
--import(envy, [envy/2]).
--import(envy, [envy/3]).
+-include_lib("kernel/include/logger.hrl").
 
 
 options(M) ->
-    case debug_options(application_module_suffix(M), [log, trace]) of
+    Options = lists:append([debug_options(M), hibernate_after(M)]),
+    ?LOG_DEBUG(#{M => Options}),
+    Options.
+
+
+debug_options(M) ->
+    case ?FUNCTION_NAME(M, [log, trace]) of
         [] ->
             [];
 
@@ -30,46 +35,62 @@ options(M) ->
             [{debug, Options}]
     end.
 
-application_module_suffix(M) ->
-    {ok, Application} = application:get_application(),
-    case string:prefix(atom_to_binary(M), atom_to_binary(Application)) of
-        <<"_", Suffix/bytes>> ->
-            binary_to_atom(Suffix);
-
-        nomatch ->
-            M
-    end.
-
 debug_options(M, Options) ->
-    ?FUNCTION_NAME(M, Options, []).
+    ?FUNCTION_NAME(M, envy:suffix(M), Options, []).
 
 
-debug_options(M, [log = Option | Options], A) ->
-    case envy(to_boolean, [M, Option], false) of
+debug_options(M, Suffix, [log = Option | Options], A) ->
+    case envy:envy(#{caller => M,
+                     default => false,
+                     names => [Suffix, Option]}) of
         true ->
             try
                 ?FUNCTION_NAME(
                    M,
+                   Suffix,
                    Options,
-                   [{log, envy(to_integer, [M, Option, n])} | A])
+                   [{log,
+                     envy:envy(
+                       #{caller => M,
+                         to => to_integer,
+                         names => [Suffix, Option, n]})} | A])
             catch
                 error:badarg ->
                     ?FUNCTION_NAME(
                        M,
+                       Suffix,
                        Options,
                        [log | A])
 
             end;
 
         false ->
-            ?FUNCTION_NAME(M, Options, A)
+            ?FUNCTION_NAME(M, Suffix, Options, A)
     end;
 
-debug_options(M, [Option | Options], A) ->
+debug_options(M, Suffix, [Option | Options], A) ->
     ?FUNCTION_NAME(
        M,
+       Suffix,
        Options,
-       [Option || envy(to_boolean, [M, Option], false)] ++ A);
+       [Option || envy:envy(
+                    #{caller => M,
+                      names => [Suffix, Option],
+                      default => false})] ++ A);
 
-debug_options(_, [], A) ->
+debug_options(_, _, [], A) ->
     A.
+
+
+hibernate_after(M) ->
+    try
+        [{?FUNCTION_NAME,
+          envy:envy(
+            #{caller => M,
+              to => to_integer,
+              names => [envy:suffix(M), ?FUNCTION_NAME]})}]
+
+    catch
+        error:badarg ->
+            []
+    end.
