@@ -1,7 +1,7 @@
 {application, 'envy', [
 	{description, "wrapper prefixing os_env with application name"},
-	{vsn, "0.8.1-1-g7256f7a"},
-	{id, "0.8.1-1-g7256f7a-dirty"},
+	{vsn, "0.9.0"},
+	{id, "0.9.0-dirty"},
 	{modules, ['envy','envy_gen']},
 	{registered, []},
 	{applications, [kernel,stdlib,any]},

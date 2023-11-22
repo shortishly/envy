@@ -19,3 +19,19 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
       - run: make all dialyze tests
+  hex-publish:
+    if: github.ref_name != 'main' && github.ref_name != 'develop'
+    needs: build
+    strategy:
+      matrix:
+        otp:
+          - 26
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+      - run: make hex-release-publish
+        env:
+          HEX_SECRET: ${{ secrets.HEX_SECRET }}

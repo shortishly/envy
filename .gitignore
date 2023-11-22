@@ -22,3 +22,4 @@ relx
 test/*.beam
 test/ct.cover.spec
 xrefr
+makefile.bak
