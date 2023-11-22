@@ -37,18 +37,8 @@ PLT_APPS += syntax_tools
 dep_any_commit = 0.3.2
 
 
-dep_any = git https://github.com/shortishly/any.git
+dep_any = $(if $(DEP_LN),ln ../../any,git https://github.com/shortishly/any.git)
 dep_beaming = $(if $(DEP_LN),ln ../../beaming,git https://github.com/shortishly/beaming.git)
-
-
-define HEX_TARBALL_EXTRA_METADATA
-#{
-	licenses => [<<"Apache-2">>],
-	links => #{
-		<<"GitHub">> => <<"https://github.com/shortishly/envy">>
-	}
-}
-endef
 
 
 include $(if $(ERLANG_MK_FILENAME),$(ERLANG_MK_FILENAME),erlang.mk)
